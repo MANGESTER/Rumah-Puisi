@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rumah Puisi</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1ee;--panel:#f8faf8;--ink:#1c2a2a;--mute:#5f7168;--line:#cbd5cf;--acc:#2f5d50;--acc-ink:#fff;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#14201d;--panel:#1b2a26;--ink:#e6eee9;--mute:#97aba2;--line:#2c3f39;--acc:#7fc4ab;--acc-ink:#10201b;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "DM Sans",system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:40px 20px 70px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+h1{font:600 clamp(2rem,7vw,3.2rem)/1.1 Newsreader,Georgia,serif;margin:0 0 6px}
+.sub{color:var(--mute);margin:0 0 36px}
+.hero{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:4px;padding:28px 26px;margin-bottom:38px;cursor:pointer;color:inherit;font:inherit}
+.hero[hidden]{display:none}
+.hero small{color:var(--mute)}
+.hero h2{font:600 1.7rem/1.2 Newsreader,Georgia,serif;margin:6px 0 2px}
+.hero pre,.poem{font:400 1.25rem/1.85 Newsreader,Georgia,serif;white-space:pre-wrap;margin:14px 0 0}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+input,textarea{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;width:100%}
+.bar input{flex:1;min-width:200px;width:auto}
+button{font:inherit;font-weight:500;cursor:pointer;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 16px}
+button.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+button.dng{color:#b3392c;border-color:#b3392c}
+button:disabled{opacity:.5;cursor:wait}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{border-radius:999px;padding:4px 14px;font-size:.9rem}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+ul{list-style:none;margin:0;padding:0}
+li{border-top:1px solid var(--line)}
+li:last-child{border-bottom:1px solid var(--line)}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;width:100%;text-align:left;background:none;border:0;border-radius:0;padding:16px 4px;font-weight:400}
+.row:hover .t{color:var(--acc)}
+.t{font:600 1.35rem/1.3 Newsreader,Georgia,serif}
+.m{color:var(--mute);font-size:.9rem;text-align:right;flex-shrink:0}
+.msg{color:var(--mute);padding:22px 4px}
+footer{margin-top:36px;text-align:center}
+footer button{border:0;background:none;color:var(--mute);font-size:.9rem;text-decoration:underline}
+.ov{position:fixed;inset:0;background:rgba(10,20,17,.55);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 14px;z-index:9}
+.ov.open{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:8px;max-width:600px;width:100%;padding:28px 24px}
+.modal h2{font:600 1.7rem/1.2 Newsreader,Georgia,serif;margin:0}
+.acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:18px}
+label{display:block;font-size:.9rem;color:var(--mute);margin:14px 0 4px}
+textarea{min-height:220px;font:400 1.1rem/1.7 Newsreader,Georgia,serif;resize:vertical}
+.err{color:#b3392c;font-size:.9rem;min-height:1.3em;margin-top:8px}
+.adm{display:none}
+.is-admin .adm{display:inline-block}
+@media (max-width:520px){.row{flex-direction:column;gap:2px}.m{text-align:left}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Rumah Puisi</h1>
+  <p class="sub">Kumpulan puisi yang bisa dibaca kapan saja.</p>
+
+  <button class="hero" id="hero" hidden>
+    <small>Puisi hari ini</small>
+    <h2 id="hT"></h2><div id="hA" class="m" style="text-align:left"></div>
+    <pre id="hX"></pre>
+  </button>
+
+  <div class="bar">
+    <input id="q" type="search" placeholder="Cari judul, penyair, atau isi puisi" aria-label="Cari puisi">
+    <button class="pri adm" id="addBtn">Tambah puisi</button>
+  </div>
+  <div class="chips" id="chips"></div>
+  <ul id="list"></ul>
+  <div class="msg" id="msg">Memuat puisi…</div>
+
+  <footer><button id="authBtn">Masuk admin</button></footer>
+</div>
+
+<div class="ov" id="readOv"><div class="modal" role="dialog" aria-modal="true">
+  <h2 id="rT"></h2><div class="m" id="rM" style="text-align:left"></div>
+  <div class="poem" id="rX"></div>
+  <div class="acts">
+    <button class="dng adm" id="rDel">Hapus puisi</button>
+    <button class="adm" id="rEdit">Edit puisi</button>
+    <button class="pri" id="rClose">Tutup</button>
+  </div>
+</div></div>
+
+<div class="ov" id="formOv"><div class="modal" role="dialog" aria-modal="true">
+  <h2 id="fH">Tambah puisi</h2>
+  <label for="fT">Judul</label><input id="fT" maxlength="200">
+  <label for="fA">Penyair</label><input id="fA" maxlength="100">
+  <label for="fC">Kategori</label><input id="fC" maxlength="50" placeholder="Contoh: Cinta, Alam, Rindu">
+  <label for="fX">Isi puisi</label><textarea id="fX"></textarea>
+  <div class="err" id="fE"></div>
+  <div class="acts"><button id="fCancel">Batal</button><button class="pri" id="fSave">Simpan puisi</button></div>
+</div></div>
+
+<div class="ov" id="loginOv"><div class="modal" role="dialog" aria-modal="true">
+  <h2>Masuk admin</h2>
+  <label for="lP">Kata sandi</label><input id="lP" type="password" autocomplete="current-password">
+  <div class="err" id="lE"></div>
+  <div class="acts"><button id="lCancel">Batal</button><button class="pri" id="lGo">Masuk</button></div>
+</div></div>
+
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var poems=[],cat="Semua",admin=false,cur=null,editId=null;
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
+async function api(url,method,body){
+  var r=await fetch(url,{method:method||"GET",headers:body?{"Content-Type":"application/json"}:{},body:body?JSON.stringify(body):undefined,credentials:"same-origin"});
+  var j=await r.json().catch(function(){return {}});
+  if(!r.ok)throw new Error(j.error||("Gagal ("+r.status+")"));
+  return j;
+}
+function openOv(id){$(id).classList.add("open")}
+function closeOv(id){$(id).classList.remove("open")}
+function setAdmin(v){admin=v;document.body.classList.toggle("is-admin",v);$("authBtn").textContent=v?"Keluar dari admin":"Masuk admin"}
+
+function hero(){
+  var h=$("hero");
+  if(!poems.length){h.hidden=true;return}
+  var p=poems[Math.floor(Date.now()/864e5)%poems.length];
+  $("hT").textContent=p.title;$("hA").textContent=p.author||"Anonim";
+  $("hX").textContent=p.text.split("\n").slice(0,6).join("\n");
+  h.hidden=false;h.onclick=function(){openRead(p)};
+}
+function render(){
+  var q=$("q").value.trim().toLowerCase(),cats=["Semua"];
+  poems.forEach(function(p){if(p.category&&cats.indexOf(p.category)<0)cats.push(p.category)});
+  if(cats.indexOf(cat)<0)cat="Semua";
+  $("chips").innerHTML=cats.map(function(c){return '<button class="chip'+(c===cat?' on':'')+'" data-c="'+esc(c)+'">'+esc(c)+'</button>'}).join("");
+  var list=poems.filter(function(p){
+    if(cat!=="Semua"&&p.category!==cat)return false;
+    return !q||(p.title+" "+p.author+" "+p.text+" "+p.category).toLowerCase().indexOf(q)>=0;
+  });
+  $("list").innerHTML=list.map(function(p){
+    return '<li><button class="row" data-id="'+esc(p.id)+'"><span class="t">'+esc(p.title)+'</span><span class="m">'+esc(p.author||"Anonim")+(p.category?", "+esc(p.category):"")+'</span></button></li>';
+  }).join("");
+  $("msg").textContent=list.length?"":(poems.length?"Tidak ada puisi yang cocok dengan pencarian.":(admin?"Belum ada puisi. Pilih “Tambah puisi” untuk memulai.":"Belum ada puisi."));
+}
+async function reload(){poems=await api("/api/poems");hero();render()}
+
+function openRead(p){cur=p;$("rT").textContent=p.title;$("rM").textContent=(p.author||"Anonim")+(p.category?", "+p.category:"");$("rX").textContent=p.text;openOv("readOv")}
+function openForm(p){
+  editId=p?p.id:null;$("fH").textContent=p?"Edit puisi":"Tambah puisi";$("fE").textContent="";
+  $("fT").value=p?p.title:"";$("fA").value=p?p.author||"":"";$("fC").value=p?p.category||"":"";$("fX").value=p?p.text:"";
+  openOv("formOv");$("fT").focus();
+}
+
+$("chips").onclick=function(e){var b=e.target.closest(".chip");if(b){cat=b.getAttribute("data-c");render()}};
+$("q").oninput=render;
+$("list").onclick=function(e){var b=e.target.closest(".row");if(!b)return;var p=poems.find(function(x){return x.id===b.getAttribute("data-id")});if(p)openRead(p)};
+$("rClose").onclick=function(){closeOv("readOv")};
+$("addBtn").onclick=function(){openForm(null)};
+$("rEdit").onclick=function(){closeOv("readOv");openForm(cur)};
+$("fCancel").onclick=function(){closeOv("formOv")};
+["readOv","formOv","loginOv"].forEach(function(id){$(id).onclick=function(e){if(e.target===$(id))closeOv(id)}});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")["readOv","formOv","loginOv"].forEach(closeOv)});
+
+$("fSave").onclick=async function(){
+  var b=$("fSave"),data={title:$("fT").value.trim(),author:$("fA").value.trim(),category:$("fC").value.trim(),text:$("fX").value};
+  if(!data.title||!data.text.trim()){$("fE").textContent="Judul dan isi puisi wajib diisi.";return}
+  b.disabled=true;$("fE").textContent="";
+  try{
+    if(editId)await api("/api/poems/"+editId,"PUT",data);else await api("/api/poems","POST",data);
+    closeOv("formOv");await reload();
+  }catch(e){$("fE").textContent=e.message}
+  finally{b.disabled=false}
+};
+$("rDel").onclick=async function(){
+  if(!cur||!confirm("Hapus puisi “"+cur.title+"”? Tindakan ini tidak bisa dibatalkan."))return;
+  try{await api("/api/poems/"+cur.id,"DELETE");closeOv("readOv");await reload()}
+  catch(e){alert(e.message)}
+};
+
+$("authBtn").onclick=async function(){
+  if(admin){try{await api("/api/logout","POST",{})}catch(e){}setAdmin(false);render();return}
+  $("lP").value="";$("lE").textContent="";openOv("loginOv");$("lP").focus();
+};
+$("lCancel").onclick=function(){closeOv("loginOv")};
+async function login(){
+  var b=$("lGo");b.disabled=true;$("lE").textContent="";
+  try{await api("/api/login","POST",{password:$("lP").value});setAdmin(true);closeOv("loginOv");render()}
+  catch(e){$("lE").textContent=e.message}
+  finally{b.disabled=false}
+}
+$("lGo").onclick=login;
+$("lP").onkeydown=function(e){if(e.key==="Enter")login()};
+
+(async function(){
+  try{var me=await api("/api/me");setAdmin(!!me.admin)}catch(e){}
+  try{await reload()}catch(e){$("msg").textContent="Puisi gagal dimuat. Muat ulang halaman."}
+})();
+})();
+</script>
+</body>
+</html>

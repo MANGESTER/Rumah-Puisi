@@ -1,0 +1,26 @@
+[
+  {
+    "id": "8e9da00482d4",
+    "title": "Hujan Pertama",
+    "author": "Penghuni Rumah",
+    "category": "Alam",
+    "text": "Hujan pertama jatuh di genting tua,\nmengetuk pintu tanah yang lama haus.\nAku duduk, menghitung tetes yang datang,\nseperti menghitung kabar yang tak kunjung lewat.",
+    "createdAt": 1793607389350
+  },
+  {
+    "id": "b899df3f6927",
+    "title": "Secangkir Pagi",
+    "author": "Penghuni Rumah",
+    "category": "Keseharian",
+    "text": "Uap dari cangkir menulis namamu di udara,\nlalu lupa mengeja huruf terakhirnya.\nPagi ini aku belajar sabar\ndari gula yang larut tanpa bunyi.",
+    "createdAt": 1793607388350
+  },
+  {
+    "id": "310c77c6ad11",
+    "title": "Jarak",
+    "author": "Penghuni Rumah",
+    "category": "Rindu",
+    "text": "Kita dipisah sebentang peta,\ntetapi malam yang sama menutup mata kita.\nJika bulan adalah surat,\nkubaca ia dua kali sebelum tidur.",
+    "createdAt": 1793607387350
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "name": "rumah-puisi",
+  "version": "1.0.0",
+  "description": "Website kumpulan puisi dengan panel admin",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}
